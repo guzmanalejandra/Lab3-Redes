@@ -1,7 +1,5 @@
 // ------------------Dikjstra's algorithm------------------
 
-
-
 function findSmallestNode(distances, visited) {
     let smallest = null;
     for (let node in distances) {
@@ -61,16 +59,6 @@ function dijkstra(graph, start, end) {
 
     return result;
 }
-
-let initial_graph = {
-    "A": {"G": 9, "D": 4, "B": 5},
-    "B": {"E": 8, "F": 8, "C": 9},
-    "C": {"F": 1, "E": 5, "A": 2},
-    "D": {"A": 5, "B": 5, "E": 10, "F": 5, "G": 10, "C": 8},
-    "E": {"D": 7, "A": 10, "F": 4, "G": 1},
-    "F": {"B": 4, "A": 2, "D": 2, "C": 6},
-    "G": {"B": 3}
-};
 
 function createMessageDikjstra(graph) {
     let results = {};

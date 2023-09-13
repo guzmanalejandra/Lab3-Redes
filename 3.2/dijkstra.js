@@ -121,31 +121,76 @@ function main() {
     output: process.stdout,
   });
 
-  let initial_graph = {
-    A: { G: 9, D: 4, B: 5 },
-    B: { E: 8, F: 8, C: 9 },
-    C: { F: 1, E: 5, A: 2 },
-    D: { A: 5, B: 5, E: 10, F: 5, G: 10, C: 8 },
-    E: { D: 7, A: 10, F: 4, G: 1 },
-    F: { B: 4, A: 2, D: 2, C: 6 },
-    G: { B: 3 },
+  const nodesInfo = {
+    A: "messi10@alumchat.xyz",
+    B: "mom20067@alumchat.xyz",
+    C: "her20053@alumchat.xyz",
+    D: "gon20362@alumchat.xyz",
+    E: "superman@alumchat.xyz",
+    F: "pablishi@alumchat.xyz",
+    G: "joehueco@alumchat.xyz",
   };
 
-  let graph = convertGraph(initial_graph);
+  let initial_graph = {};
 
-  console.log("Grafo: ");
-  console.log(graph);
+  let nodes = Object.keys(nodesInfo);
 
-  // Nodo de inicio
-  rl.question("Ingrese el nodo de inicio: ", function (start) {
-    // Mensaje aka paquete
-    message = JSON.stringify(createMessageDikjstra(initial_graph));
-    console.log("El mensaje es: " + message);
-    let nodesReached = flooding(graph, start);
-    console.log("Nodos que recibieron el mensaje: ", nodesReached.join(", "));
-    console.log("Tabla de enrutamiento: ");
-    console.log(tablaEnrutamiento(nodesReached, start, message));
-  });
+  function askForDistances(index) {
+    if (index >= nodes.length) {
+      // Finalizamos el proceso de ingreso de distancias y continuamos con el programa
+      let graph = convertGraph(initial_graph);
+
+      console.log("Grafo: ");
+      console.log(graph);
+
+      rl.question("Ingrese el nodo de inicio: ", function (start) {
+        let message = JSON.stringify(createMessageDikjstra(initial_graph));
+        console.log("El mensaje es: " + message);
+        let nodesReached = flooding(graph, start);
+        console.log(
+          "Nodos que recibieron el mensaje: ",
+          nodesReached.join(", ")
+        );
+        console.log("Tabla de enrutamiento: ");
+        console.log(tablaEnrutamiento(nodesReached, start, message));
+        rl.close();
+      });
+      return;
+    }
+
+    let currentNode = nodes[index];
+    initial_graph[currentNode] = {};
+
+    function askForNeighborDistances(nodeIndex) {
+      if (nodeIndex >= nodes.length) {
+        // Pasar al siguiente nodo principal
+        askForDistances(index + 1);
+        return;
+      }
+      if (nodes[nodeIndex] === currentNode) {
+        // Si el nodo vecino es igual al nodo actual, simplemente pasamos al siguiente nodo vecino
+        askForNeighborDistances(nodeIndex + 1);
+        return;
+      }
+
+      rl.question(
+        `Ingrese la distancia de ${currentNode} a ${nodes[nodeIndex]} (deje en blanco si no están conectados): `,
+        function (distance) {
+          if (distance.trim() !== "") {
+            initial_graph[currentNode][nodes[nodeIndex]] = parseInt(
+              distance,
+              10
+            );
+          }
+          askForNeighborDistances(nodeIndex + 1);
+        }
+      );
+    }
+
+    askForNeighborDistances(0);
+  }
+
+  askForDistances(0);
 }
 
 main();
